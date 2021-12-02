@@ -1,6 +1,6 @@
 @echo off
 
-set /a stepTotal = 5
+set /a stepTotal = 6
 set /a stepCount = 0
 
 :hardReboot
@@ -23,8 +23,25 @@ ipconfig /all 1>>InternetFixLog.txt 2>>&1
 
 cls
 set /a stepCount=%stepCount%+1
+setlocal enabledelayedexpansion
+set "names="
+(set \n=^
+%=DONT REMOVE THIS=%
+)
+for /f "tokens=1,2,3,* delims= " %%a in ('findstr /R /C:"Dedicated" InternetFixLog.txt') do (
+	cls
+	echo Executing %stepCount%/%stepTotal%
+	echo Enabling Adapters
+	set names=!names!%%d!\n!
+	echo !names!
+	netsh interface set interface "%%d" enable
+)
+endlocal
+
+cls
+set /a stepCount=%stepCount%+1
 echo Executing %stepCount%/%stepTotal%
-echo Releasing IP Addess
+echo Releasing IP Address
 echo/ 1>>InternetFixLog.txt
 echo [[[Releasing IP Addess]]] 1>>InternetFixLog.txt 2>>&1
 ipconfig /release 1>>InternetFixLog.txt 2>>&1
